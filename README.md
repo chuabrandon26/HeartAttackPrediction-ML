@@ -71,7 +71,9 @@ Performance on the held-out test set (321 patients):
 | AdaBoost | 98.44% | 98.44% | 98.50% | 98.99% | 98.27% |
 | Decision Tree | 98.44% | 98.44% | 98.99% | 98.49% | 98.43% |
 
-The final Random Forest uses `n_estimators=200`, `max_depth=10` and `min_samples_split=2`.
+The final Random Forest uses `n_estimators=200`, `max_depth=10` and `min_samples_split=2`. The ROC AUC values in this table are computed from predicted class labels.
+
+In addition, the ROC cell trains all five tuned models with a fixed `random_state`, computes each AUC from predicted probabilities with `roc_auc_score`, and plots the curves on one figure (`auc.png`). Its earlier output showed a hard-coded AUC label, so that output has been cleared, and running the notebook regenerates the figure from the test set.
 
 <p>
   <img src="assets/figures/age-distribution.png" width="49%" alt="Age distribution of patients">
@@ -123,11 +125,11 @@ model.fit(X_train, y_train)                                   # 99.07% test accu
 ## Quick start
 
 ```bash
-pip install scikit-learn xgboost pandas seaborn matplotlib joblib
+pip install "scikit-learn<1.6" xgboost pandas seaborn matplotlib joblib
 jupyter notebook heart_attack_classification_Project.ipynb
 ```
 
-Running the notebook saves the final model as `rf_heart_model.pkl`, which the last cells load to score new patients.
+The version pin keeps the tuning grid working, since it includes the AdaBoost `SAMME.R` option that newer scikit-learn releases removed. Running the notebook saves the ROC comparison as `auc.png` and the final model as `rf_heart_model.pkl`, which the last cells load to score new patients.
 
 ## Repository structure
 
