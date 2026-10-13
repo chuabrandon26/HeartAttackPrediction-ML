@@ -1,0 +1,8 @@
+# Fetched by scripts/fetch_data.py from the Mendeley deposit, not redistributed here
+data/
+
+# Produced by running the notebook
+auc.png
+rf_heart_model.pkl
+.ipynb_checkpoints/
+__pycache__/

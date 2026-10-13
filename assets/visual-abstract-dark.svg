@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 752" width="1000" height="752" role="img" aria-labelledby="t d">
-<title id="t">Visual abstract: Predicting heart attacks from clinical biomarkers</title>
-<desc id="d">Five tree-based classifiers (decision tree, random forest, gradient boosting, AdaBoost, XGBoost) predict heart attack from age, sex, heart rate, blood pressure, blood sugar, CK-MB and troponin in 1,283 cleaned patient records. A tuned random forest reaches 99.07 percent test accuracy and 99.49 percent precision on held-out patients.</desc>
+<title id="t">Visual abstract: target leakage in a heart attack dataset</title>
+<desc id="d">A heart attack classifier reaches 0.996 ROC AUC on 1,283 cleaned patient records using troponin and CK-MB, the two blood tests a heart attack is diagnosed with. Removing them drops ROC AUC to 0.615 against a 0.604 majority-class baseline, and a single threshold on troponin with no model reaches 0.882 accuracy. The two assays hold 91.9 percent of the model's feature importance, identifying the result as target leakage.</desc>
 <style>
   text { font-family: 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif; fill: #e6edf3; }
   .bgcard { fill: #151b23; stroke: #2d3640; }
@@ -106,29 +106,29 @@
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 </style>
 <rect x="0.5" y="0.5" width="999" height="751" rx="18" class="bgcard"/>
-<text x="36.0" y="44.0" class="eyebrow">VISUAL ABSTRACT  ·  CLINICAL MACHINE LEARNING  ·  SCIKIT-LEARN  ·  XGBOOST</text>
-<text x="36.0" y="79.0" class="title">Predicting heart attacks from clinical biomarkers</text>
-<text x="36.0" y="106.0" class="sub">Five tree-based classifiers benchmarked on 1,283 patients, with outlier cleaning, clinical flags and tuning</text>
-<rect x="36" y="128" width="296" height="368" rx="12" class="panel"/><text x="52.0" y="154.0" class="eyebrow">QUESTION</text><text x="52.0" y="176.0" class="h2">Who is having a heart attack?</text>
+<text x="36.0" y="44.0" class="eyebrow">VISUAL ABSTRACT  ·  TARGET LEAKAGE  ·  CLINICAL MACHINE LEARNING  ·  SCIKIT-LEARN</text>
+<text x="36.0" y="79.0" class="title">When 99% accuracy means nothing</text>
+<text x="36.0" y="106.0" class="sub">Target leakage found and measured: removing the two diagnostic assays drops ROC AUC from 0.996 to 0.615</text>
+<rect x="36" y="128" width="296" height="368" rx="12" class="panel"/><text x="52.0" y="154.0" class="eyebrow">QUESTION</text><text x="52.0" y="176.0" class="h2">Prediction, or reading the test?</text>
 <path class="m-ecg" d="M52.0,240.0 L66.0,240.0 L70.0,234.0 L74.0,240.0 L82.0,240.0 L85.0,246.0 L89.0,206.0 L93.0,254.0 L97.0,240.0 L108.0,240.0 L114.0,231.0 L122.0,240.0 L136.0,240.0 L136.0,240.0 L150.0,240.0 L154.0,234.0 L158.0,240.0 L166.0,240.0 L169.0,246.0 L173.0,206.0 L177.0,254.0 L181.0,240.0 L192.0,240.0 L198.0,231.0 L206.0,240.0 L220.0,240.0 L220.0,240.0 L234.0,240.0 L238.0,234.0 L242.0,240.0 L250.0,240.0 L253.0,246.0 L257.0,206.0 L261.0,254.0 L265.0,240.0 L276.0,240.0 L282.0,231.0 L290.0,240.0 L304.0,240.0"/>
 <path d="M138.0,318.0 A46,46 0 0 1 161.0,278.2" class="m-gauge acc"/>
 <path d="M161.0,278.2 A46,46 0 0 1 207.0,278.2" class="m-gauge cb"/>
 <path d="M207.0,278.2 A46,46 0 0 1 230.0,318.0" class="m-gauge hom"/>
 <line x1="184.0" y1="318" x2="210.2" y2="296.3" class="m-needle"/>
 <circle cx="184.0" cy="318" r="4" class="m-center"/>
-<text x="132.0" y="320.0" class="m-lab" text-anchor="end">low</text>
-<text x="236.0" y="320.0" class="m-lab">high</text>
-<text x="184.0" y="342.0" class="small" text-anchor="middle">From biomarkers to a low, medium or high risk call</text>
-<text x="52.0" y="368.0" class="body">Troponin and CK-MB rise when heart</text>
-<text x="52.0" y="384.5" class="body">muscle is damaged. Combined with age,</text>
-<text x="52.0" y="401.0" class="body">blood pressure, heart rate and blood</text>
-<text x="52.0" y="417.5" class="body">sugar, they can feed a fast triage</text>
-<text x="52.0" y="434.0" class="body">model.</text>
+<text x="132.0" y="320.0" class="m-lab" text-anchor="end">label</text>
+<text x="236.0" y="320.0" class="m-lab">assay</text>
+<text x="184.0" y="342.0" class="small" text-anchor="middle">The label and two features come from one measurement</text>
+<text x="52.0" y="368.0" class="body">Troponin and CK-MB are not risk</text>
+<text x="52.0" y="384.5" class="body">factors. They are the blood tests a</text>
+<text x="52.0" y="401.0" class="body">heart attack is diagnosed with, so a</text>
+<text x="52.0" y="417.5" class="body">model given them recovers the label</text>
+<text x="52.0" y="434.0" class="body">from the measurement that made it.</text>
 <rect x="48" y="446" width="272" height="38" rx="8" class="qbox"/>
 <circle cx="68" cy="465" r="10" class="qmark"/>
 <text x="68.0" y="470.0" class="qmark-t" text-anchor="middle">?</text>
-<text x="86.0" y="461.0" class="q">How accurately can tree ensembles</text>
-<text x="86.0" y="477.0" class="q">classify patients from lab values?</text>
+<text x="86.0" y="461.0" class="q">How much of the accuracy survives</text>
+<text x="86.0" y="477.0" class="q">removing the diagnostic assays?</text>
 <rect x="352" y="128" width="296" height="368" rx="12" class="panel"/><text x="368.0" y="154.0" class="eyebrow">DATA AND DESIGN</text><text x="368.0" y="176.0" class="h2">1,319 patient records</text>
 <rect x="368" y="192" width="128" height="66" rx="8" class="statbox"/>
 <text x="380.0" y="222.0" class="num">1,283</text>
@@ -147,32 +147,32 @@
 <text x="368.0" y="395.0" class="body">to 600 mg/dL, CK-MB above 200) are</text>
 <text x="368.0" y="411.5" class="body">removed before modeling.</text>
 <line x1="368" y1="446" x2="632" y2="446" class="rule"/>
-<text x="368.0" y="466.0" class="small">Flags: CK-MB &gt; 50 and troponin &gt; 0.04 ng/mL</text>
-<text x="368.0" y="481.0" class="small">Tuning: RandomizedSearchCV, 3-fold CV</text>
-<rect x="668" y="128" width="296" height="368" rx="12" class="panel"/><text x="684.0" y="154.0" class="eyebrow">FINDINGS</text><text x="684.0" y="176.0" class="h2">Held-out test performance</text>
-<text x="684.0" y="212.0" class="lab">Random Forest</text>
-<text x="684.0" y="227.0" class="lab">(tuned)</text>
+<text x="368.0" y="466.0" class="small">Flag built at troponin &gt; 0.04, the clinical cut-off</text>
+<text x="368.0" y="481.0" class="small">Scoring: 5-fold CV, AUC from probabilities</text>
+<rect x="668" y="128" width="296" height="368" rx="12" class="panel"/><text x="684.0" y="154.0" class="eyebrow">FINDINGS</text><text x="684.0" y="176.0" class="h2">What the leakage test shows</text>
+<text x="684.0" y="212.0" class="lab">With the assays</text>
+<text x="684.0" y="227.0" class="lab">all 8 features</text>
 <rect x="848" y="192" width="100" height="46" rx="8" class="tile metric"/>
-<text x="898.0" y="216.0" class="tval" text-anchor="middle">99.07%</text>
-<text x="898.0" y="230.0" class="tsub" text-anchor="middle">test accuracy</text>
-<text x="684.0" y="264.0" class="lab">Random Forest</text>
-<text x="684.0" y="279.0" class="lab">precision</text>
+<text x="898.0" y="216.0" class="tval" text-anchor="middle">0.996</text>
+<text x="898.0" y="230.0" class="tsub" text-anchor="middle">ROC AUC</text>
+<text x="684.0" y="264.0" class="lab">Without them</text>
+<text x="684.0" y="279.0" class="lab">6 features</text>
 <rect x="848" y="244" width="100" height="46" rx="8" class="tile metric"/>
-<text x="898.0" y="268.0" class="tval" text-anchor="middle">99.49%</text>
-<text x="898.0" y="282.0" class="tsub" text-anchor="middle">recall 98.99%</text>
-<text x="684.0" y="316.0" class="lab">XGBoost and</text>
-<text x="684.0" y="331.0" class="lab">Gradient Boost</text>
+<text x="898.0" y="268.0" class="tval" text-anchor="middle">0.615</text>
+<text x="898.0" y="282.0" class="tsub" text-anchor="middle">baseline 0.604</text>
+<text x="684.0" y="316.0" class="lab">The assays</text>
+<text x="684.0" y="331.0" class="lab">on their own</text>
 <rect x="848" y="296" width="100" height="46" rx="8" class="tile metric"/>
-<text x="898.0" y="320.0" class="tval" text-anchor="middle">98.75%</text>
-<text x="898.0" y="334.0" class="tsub" text-anchor="middle">test accuracy</text>
-<text x="684.0" y="368.0" class="lab">Decision Tree and</text>
-<text x="684.0" y="383.0" class="lab">AdaBoost</text>
+<text x="898.0" y="320.0" class="tval" text-anchor="middle">0.994</text>
+<text x="898.0" y="334.0" class="tsub" text-anchor="middle">ROC AUC</text>
+<text x="684.0" y="368.0" class="lab">One cut-off,</text>
+<text x="684.0" y="383.0" class="lab">no model at all</text>
 <rect x="848" y="348" width="100" height="46" rx="8" class="tile metric"/>
-<text x="898.0" y="372.0" class="tval" text-anchor="middle">98.44%</text>
-<text x="898.0" y="386.0" class="tsub" text-anchor="middle">test accuracy</text>
-<text x="684.0" y="418.0" class="body">Troponin and CK-MB are themselves</text>
-<text x="684.0" y="434.5" class="body">diagnostic markers, which helps</text>
-<text x="684.0" y="451.0" class="body">explain the very high scores.</text>
+<text x="898.0" y="372.0" class="tval" text-anchor="middle">0.882</text>
+<text x="898.0" y="386.0" class="tsub" text-anchor="middle">accuracy</text>
+<text x="684.0" y="418.0" class="body">Dropping 2 of 8 inputs collapses the</text>
+<text x="684.0" y="434.5" class="body">model to the majority-class baseline.</text>
+<text x="684.0" y="451.0" class="body">The assays hold 91.9% of importance.</text>
 <path class="chev" d="M339,298 l6,6 l-6,6"/>
 <path class="chev" d="M655,298 l6,6 l-6,6"/>
 <rect x="36" y="512" width="928" height="110" rx="12" class="panel"/>
@@ -193,8 +193,8 @@
 <rect x="310.9" y="548" width="119.4" height="50" rx="8" class="chip" style="animation-delay:2.4s"/>
 <text x="319.9" y="565.0" class="step-n">3</text>
 <text x="330.9" y="566.0" class="step-role">Engineer</text>
-<text x="319.9" y="581.0" class="step-tool">clinical flags</text>
-<text x="319.9" y="594.0" class="small">CK-MB, troponin</text>
+<text x="319.9" y="581.0" class="step-tool">leakage test</text>
+<text x="319.9" y="594.0" class="small">drop the assays</text>
 <rect x="440.3" y="548" width="119.4" height="50" rx="8" class="chip" style="animation-delay:3.6s"/>
 <text x="449.3" y="565.0" class="step-n">4</text>
 <text x="460.3" y="566.0" class="step-role">Split</text>
@@ -216,8 +216,8 @@
 <text x="837.6" y="581.0" class="step-tool">joblib</text>
 <text x="837.6" y="594.0" class="small">risk scoring</text>
 <text x="36.0" y="650.0" class="eyebrow">TAKE-HOME</text>
-<text x="36.0" y="673.0" class="take">A tuned Random Forest reaches <tspan class="em">99.07% test accuracy</tspan> on held-out patients, and the saved model scores new</text>
-<text x="36.0" y="694.0" class="take">patients instantly. However, troponin and CK-MB are diagnostic markers, so <tspan class="em">external validation</tspan> is the next step.</text>
+<text x="36.0" y="673.0" class="take">A tuned Random Forest reaches <tspan class="em">0.996 ROC AUC</tspan>, and removing troponin and CK-MB drops it to</text>
+<text x="36.0" y="694.0" class="take"><tspan class="em">0.615</tspan>, at a 0.604 baseline. The assays are how the diagnosis is made, so this is target leakage.</text>
 <text x="36.0" y="728.0" class="eyebrow">SKILLS</text>
 <rect x="100.0" y="712" width="87.9" height="24" rx="12" class="skill"/>
 <text x="144.0" y="728.0" class="chiptext" text-anchor="middle">scikit-learn</text>

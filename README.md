@@ -1,145 +1,170 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/visual-abstract-dark.svg">
-  <img alt="Visual abstract: five tree-based classifiers predict heart attack from age, sex, heart rate, blood pressure, blood sugar, CK-MB and troponin in 1,283 cleaned patient records. A tuned random forest reaches 99.07 percent test accuracy and 99.49 percent precision on held-out patients." src="assets/visual-abstract-light.svg" width="100%">
+  <img alt="Visual abstract: a heart attack classifier reaches 0.996 ROC AUC using troponin and CK-MB, the two blood tests a heart attack is diagnosed with. Removing them drops AUC to 0.615 against a 0.604 majority-class baseline, and a single threshold on troponin with no model reaches 0.882 accuracy. The two assays hold 91.9 percent of the model's feature importance, which identifies the result as target leakage." src="assets/visual-abstract-light.svg" width="100%">
 </picture>
 
-<h1 align="center">Heart Attack Prediction with Machine Learning</h1>
+<h1 align="center">When 99% Accuracy Means Nothing</h1>
 
 <p align="center">
-  A clinical risk classifier built from routine biomarkers, with careful data cleaning, five benchmarked tree models and hyperparameter tuning
+  Target leakage in a heart attack dataset, found and measured
 </p>
 
 <p align="center">
-  <img alt="test accuracy: 99.07%" src="https://img.shields.io/badge/test%20accuracy-99.07%25-1f8f6a">
+  <img alt="AUC with leakage: 0.996" src="https://img.shields.io/badge/AUC%20with%20leakage-0.996-B03A2E">
+  <img alt="AUC without: 0.615" src="https://img.shields.io/badge/AUC%20without-0.615-1E8449">
   <img alt="scikit--learn: 1.5" src="https://img.shields.io/badge/scikit----learn-1.5-F7931E?logo=scikitlearn&logoColor=white">
-  <img alt="XGBoost: 2.1" src="https://img.shields.io/badge/XGBoost-2.1-4a3aa7">
   <img alt="Python: pandas · seaborn" src="https://img.shields.io/badge/Python-pandas%20%C2%B7%20seaborn-3776AB?logo=python&logoColor=white">
   <img alt="license: MIT" src="https://img.shields.io/badge/license-MIT-566573">
 </p>
 
 <p align="center">
-  <a href="#overview">Overview</a> &nbsp;·&nbsp; <a href="#results">Results</a> &nbsp;·&nbsp; <a href="#pipeline">Pipeline</a> &nbsp;·&nbsp; <a href="#interpretation-and-limitations">Interpretation</a> &nbsp;·&nbsp; <a href="#quick-start">Quick start</a>
+  <a href="#the-finding">The finding</a> &nbsp;·&nbsp; <a href="#why-this-is-leakage">Why</a> &nbsp;·&nbsp; <a href="#how-it-was-measured">How</a> &nbsp;·&nbsp; <a href="#what-this-dataset-can-support">What it supports</a> &nbsp;·&nbsp; <a href="#quick-start">Quick start</a>
 </p>
 
 ---
 
 ## At a glance
 
-| **1,283** | **8** | **5** | **99.07%** | **99.49%** |
+| **0.996** | **0.615** | **0.604** | **0.882** | **91.9%** |
 |:---:|:---:|:---:|:---:|:---:|
-| patients after cleaning | clinical features | classifiers benchmarked | test accuracy (Random Forest) | test precision (Random Forest) |
+| AUC with troponin and CK-MB | AUC without them | majority-class baseline | accuracy from one troponin cut-off, no model | feature importance held by the two assays |
 
-> **Take-home:** a tuned Random Forest reaches 99.07% accuracy on held-out patients, and the saved model scores new patients instantly. However, troponin and CK-MB are themselves diagnostic markers of heart muscle damage, so validation on an independent cohort is the natural next step.
+> **Take-home:** this dataset's headline accuracy comes from target leakage. Troponin and
+> CK-MB are not predictors of a heart attack, they are the blood tests it is diagnosed
+> with. A model given them is recovering the label from the measurement that defined it.
+> Remove them and the model drops to the level of guessing the commoner class.
 
-## Skills demonstrated
+## The finding
 
-| Area | Evidence in this repository |
-|---|---|
-| **Exploratory data analysis** | Distribution and box plots for every clinical variable, plus missing-value and duplicate checks |
-| **Clinical data cleaning** | Rule-based removal of physiologically impossible readings and clinically motivated CK-MB and troponin flags |
-| **Machine learning** | Decision tree, random forest, gradient boosting, AdaBoost and XGBoost classifiers benchmarked on a held-out test set |
-| **Model selection** | RandomizedSearchCV with 3-fold cross-validation, evaluated with accuracy, F1, precision, recall and ROC AUC |
-| **Deployment** | Model persistence with joblib and a risk-scoring function for new patients |
-| **Python** | pandas, NumPy, seaborn, matplotlib, scikit-learn and XGBoost |
+A tuned random forest on all eight inputs reaches **0.996 ROC AUC** and 98.7% accuracy.
+That number is real and reproducible. It is also meaningless as a prediction claim.
 
-## Overview
+| Feature set | AUC | Accuracy |
+|---|:---:|:---:|
+| Every feature | 0.996 | 0.987 |
+| **Troponin and CK-MB removed** | **0.615** | **0.635** |
+| The two assays alone | 0.994 | 0.981 |
+| Troponin alone, single cut-off, no model at all | 0.900 | 0.882 |
+| Majority-class baseline | 0.500 | 0.604 |
 
-Heart attacks (myocardial infarctions) need to be recognized quickly. This project builds a machine learning classifier that predicts whether a patient is having a heart attack from eight routine clinical measurements, and it then benchmarks five tree-based models to find the most reliable one. It was completed as a systems biology project at Heidelberg University.
+Three things follow.
 
-**Features used**
+**Removing two of eight inputs collapses the model.** AUC falls from 0.996 to 0.615, and
+accuracy to 0.635 against a 0.604 baseline. On routine observations, age, sex, heart rate,
+blood pressure and blood sugar, the model is barely distinguishable from always answering
+"heart attack".
 
-| Feature | Description |
-|---|---|
-| Age, Gender | Patient demographics |
-| Heart rate | Beats per minute |
-| Systolic and diastolic blood pressure | mmHg |
-| Blood sugar | mg/dL |
-| CK-MB | Creatine kinase myocardial band, a marker of heart muscle damage |
-| Troponin | Cardiac troponin, the most specific blood marker of heart muscle injury |
-| `flag_abnormal_CK-MB` | Engineered flag, CK-MB above 50 (about 10 times the upper reference limit) |
-| `Troponin_flag` | Engineered flag, troponin above 0.04 ng/mL (the 99th percentile of a healthy population) |
+**The two assays alone match the full model.** Everything else contributes nothing once
+they are present.
 
-## Results
+**A single threshold beats the pipeline.** Thresholding troponin at 0.015 ng/mL, with no
+model, no tuning and no cross-validation, reaches 0.882 accuracy. Five classifiers and a
+RandomizedSearchCV over 50 configurations do not improve on one comparison.
 
-Performance on the held-out test set (321 patients):
+![Leakage](assets/figures/leakage-auc-and-importance.png)
 
-| Model | Accuracy | F1 | Precision | Recall | ROC AUC |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **Random Forest (tuned)** | **99.07%** | **99.07%** | **99.49%** | **98.99%** | **99.09%** |
-| XGBoost | 98.75% | 98.75% | 98.99% | 98.99% | 98.68% |
-| Gradient Boosting | 98.75% | 98.75% | 98.99% | 98.99% | 98.68% |
-| AdaBoost | 98.44% | 98.44% | 98.50% | 98.99% | 98.27% |
-| Decision Tree | 98.44% | 98.44% | 98.99% | 98.49% | 98.43% |
+## Why this is leakage
 
-The final Random Forest uses `n_estimators=200`, `max_depth=10` and `min_samples_split=2`. The ROC AUC values in this table are computed from predicted class labels.
+Troponin is a protein released into the blood when heart muscle is damaged. The Fourth
+Universal Definition of Myocardial Infarction defines the event as a **rise and fall of
+cardiac troponin above the 99th percentile of a reference population**, together with
+clinical evidence of ischaemia. CK-MB serves the same diagnostic role, less specifically.
 
-In addition, the ROC cell trains all five tuned models with a fixed `random_state`, computes each AUC from predicted probabilities with `roc_auc_score`, and plots the curves on one figure (`auc.png`). Its earlier output showed a hard-coded AUC label, so that output has been cleared, and running the notebook regenerates the figure from the test set.
+So troponin is not a risk factor measured before the event. It is the measurement the
+diagnosis is made from. A model predicting the diagnosis from troponin is predicting a
+label from the test that produced it, which is **target leakage**.
 
-<p>
-  <img src="assets/figures/age-distribution.png" width="49%" alt="Age distribution of patients">
-  <img src="assets/figures/gender-distribution.png" width="40%" alt="Gender distribution of patients">
-</p>
+The notebook makes this concrete. It builds a feature `Troponin_flag` at 0.04 ng/mL and
+documents that this is the clinical decision threshold. A feature constructed from the
+diagnostic cut-off is a restatement of the diagnosis, not a predictor of it.
+
+Standard safeguards do not catch this. The train and test split is correct, the
+cross-validation is correct, and the tuning is correct. Leakage of this kind lives in the
+*meaning of the columns*, not in the fitting procedure, so no resampling scheme detects
+it. Only knowing what the measurements are does.
+
+## How it was measured
+
+- **Five-fold cross-validation** rather than a single split, so the comparison does not
+  depend on one partition.
+- **AUC computed from predicted probabilities**, not from hard class labels. AUC on 0/1
+  predictions discards the ranking it is meant to measure and collapses toward balanced
+  accuracy.
+- **Average precision reported alongside AUC**, since the classes are imbalanced at 60/40.
+- **A majority-class baseline**, so "0.635 accuracy" is read against the 0.604 that
+  predicting the commoner class achieves for free.
+- **A model-free control**: troponin used directly as a score, and the best single cut-off
+  found by sweeping. If a threshold matches the model, the model has learned the threshold.
+
+## What this dataset can support
+
+**It cannot support** a claim of predicting heart attacks from routine clinical
+observations. The honest figure for that question is AUC 0.615, which is not clinically
+useful.
+
+**It can support** a demonstration that the diagnostic assays are doing all the work. That
+is a real, checkable finding, and it is what this repository now reports.
+
+**What would make the prediction question answerable:** features recorded *before* the
+diagnostic workup, such as presenting symptoms, ECG findings, history, medications and
+time from symptom onset. Troponin at admission could legitimately predict a *later*
+outcome such as mortality or reinfarction, since that outcome is not defined by the assay.
 
 ## Pipeline
 
 ```mermaid
 flowchart LR
-  A["1,319 records<br/>Kaggle medical dataset"] --> B["EDA<br/>distributions, box plots"] --> C["Cleaning<br/>impossible values removed"]
-  C --> D["Feature flags<br/>CK-MB, troponin"] --> E["Train / test split<br/>75 / 25"]
-  E --> F["5 classifiers<br/>DT, RF, GB, AB, XGB"] --> G["RandomizedSearchCV<br/>3-fold CV"] --> H["Final Random Forest<br/>joblib model"]
+  A["1,319 records<br/>Mendeley deposit"] --> B["EDA<br/>distributions, box plots"] --> C["Cleaning<br/>impossible values removed<br/>1,283 retained"]
+  C --> D["5 classifiers<br/>DT, RF, GB, AB, XGB"] --> E["RandomizedSearchCV<br/>3-fold CV"] --> F["AUC 0.996"]
+  F --> G["Leakage test<br/>drop troponin + CK-MB"] --> H["AUC 0.615"]
 ```
 
-The core steps, as implemented in the notebook:
+## Data
 
-```python
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+| | |
+|---|---|
+| **Source** | [Mendeley Data, doi:10.17632/wmhctcrt5v.1](https://data.mendeley.com/datasets/wmhctcrt5v) |
+| **Collected** | Zheen Hospital, Erbil, Iraq, January to May 2019 |
+| **Size** | 1,319 records, 8 inputs and 1 label; 1,283 retained after cleaning |
+| **Classes** | 60.4% positive |
+| **Fetch** | `python scripts/fetch_data.py` |
 
-df = pd.read_csv("Medicaldataset.csv")                        # 1,319 records
-
-# Remove physiologically impossible readings
-df = df[df["Heart rate"] < 200]
-df = df[(df["Blood sugar"] >= 50) & (df["Blood sugar"] <= 600)]
-df = df[(df["CK-MB"] >= 0) & (df["CK-MB"] <= 200)]
-
-# Clinically motivated flags
-df["flag_abnormal_CK-MB"] = (df["CK-MB"] > 50).astype(int)
-df["Troponin_flag"] = (df["Troponin"] > 0.04).astype(int)
-df["heart_attack"] = (df.pop("Result") == "positive").astype(int)
-
-X, y = df.drop(columns="heart_attack"), df["heart_attack"]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
-
-model = RandomForestClassifier(n_estimators=200, max_depth=10, min_samples_split=2)
-model.fit(X_train, y_train)                                   # 99.07% test accuracy
-```
-
-## Interpretation and limitations
-
-- **Why the scores are so high:** troponin and CK-MB are the biomarkers clinicians use to diagnose heart muscle damage, so the label is closely tied to two of the inputs. Consequently, the near-perfect accuracy reflects how informative these markers are rather than a hidden pattern in the other features.
-- **Single dataset:** all models were trained and tested on one public dataset, so performance on a different hospital population is unknown.
-- **Perfect training scores:** tree models fit the training set perfectly, which makes the held-out test set and cross-validation essential for judging generalization.
-- **Next steps:** external validation, feature-importance and SHAP analysis, and a version of the model without troponin and CK-MB to measure how much the other features contribute.
+The notebook previously read `/kaggle/input/heart-attack-dataset/Medicaldataset.csv`,
+a path that only resolves inside a Kaggle kernel. It now reads `data/Medicaldataset.csv`,
+fetched from the original open deposit by the script above, which also checks the row
+count against the publication.
 
 ## Quick start
 
 ```bash
-pip install "scikit-learn<1.6" xgboost pandas seaborn matplotlib joblib
+pip install scikit-learn xgboost pandas seaborn matplotlib joblib
+python scripts/fetch_data.py
 jupyter notebook heart_attack_classification_Project.ipynb
 ```
 
-The version pin keeps the tuning grid working, since it includes the AdaBoost `SAMME.R` option that newer scikit-learn releases removed. Running the notebook saves the ROC comparison as `auc.png` and the final model as `rf_heart_model.pkl`, which the last cells load to score new patients.
+The notebook runs top to bottom in a fresh kernel. Three defects that previously prevented
+that are fixed: `RandomizedSearchCV` and `joblib` were used without being imported, and a
+superseded draft cell referenced a variable defined later in the notebook. The AdaBoost
+grid now adapts to the installed scikit-learn, since version 1.6 removed the `algorithm`
+argument that the old pin worked around.
 
 ## Repository structure
 
 ```
-├── heart_attack_classification_Project.ipynb   # EDA, cleaning, benchmarking, tuning and scoring
+├── heart_attack_classification_Project.ipynb   # EDA, cleaning, benchmarking, leakage test
+├── scripts/fetch_data.py                       # downloads the dataset from Mendeley
+├── data/Medicaldataset.csv                     # created by the fetch script
 ├── assets/
-│   ├── visual-abstract-*.svg                   # Visual abstract (light and dark)
-│   └── figures/                                # Figures exported from the notebook outputs
+│   ├── visual-abstract-*.svg                   # visual abstract, light and dark
+│   └── figures/                                # exported from notebook outputs
 └── LICENSE
 ```
+
+## Provenance
+
+Self-directed project, originally completed as a systems biology project at Heidelberg
+University and subsequently reworked around the leakage finding. Code was written with AI
+assistance and has been reviewed and validated by me.
 
 ## License
 
